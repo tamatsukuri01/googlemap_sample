@@ -1,0 +1,106 @@
+<template>
+  <div>
+    <h1>GoogleMap</h1>
+    <b-row>
+      <b-col>
+        <b-row>
+          <b-col>
+            <label for="">
+              緯度
+            </label>
+            <input 
+              type="text" 
+              v-model="lat"
+            > 
+          </b-col>
+          <b-col>
+            <label for="">
+              経度
+            </label>
+            <input 
+              type="text" 
+              v-model="lng"
+            >
+            <button 
+              type="button" 
+              @click="searchMainLatLng(lat,lng)"
+            >緯度経度検索</button>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <input 
+              type="text" 
+              v-model="address"
+            >
+            <button 
+              type="button" 
+              @click="searchAddress"
+            >住所検索</button>
+            </b-col>
+          </b-row>
+        
+      </b-col>
+      <b-col>
+        <div>
+          <b-row>
+            <b-col>
+              <label for="">
+                目的地緯度:
+              </label>
+              <input 
+                type="text"
+                readonly
+                v-model="destinationLat"
+              >
+              </b-col>
+              <b-col>
+              <label for="">
+                目的地緯度:
+              </label>
+              <input 
+                type="text"
+                readonly
+                v-model="destinationLng"
+              >
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <label for="">
+                目的地住所
+              </label>
+              <input
+                v-model="destinationAddress"
+                type="text"
+                readonly>
+            </b-col>
+          </b-row>
+        </div>
+      </b-col>
+    </b-row>
+    <div 
+      ref="map" 
+      style="height:500px;width:100%;"
+    ></div>
+  </div>
+</template>
+
+
+<script>
+import { GoogleMapLoad } from "../mixins/googlemaploader"
+
+export default {
+  mixins:[GoogleMapLoad],
+  data(){
+    return {
+      address:'',
+      lat:35.68963987311848,
+      lng:139.69209551811218,
+      destinationLat:'',
+      destinationLng:'',
+      destinationAddress:''
+    }
+  }
+}
+</script>

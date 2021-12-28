@@ -34,7 +34,7 @@ export const GoogleMapLoad = {
       this.initMapPin(latLng)
       this.setMapMethod()
       this.searchMainLatLng(this.mainMappin.position.lat(),this.mainMappin.position.lng())
-      this.map.addListener('dblclick',(mapsMouseEvent)=>{
+      this.map.addListener('click',(mapsMouseEvent)=>{
         return this.clickOnMap(mapsMouseEvent);
       });
       this.mainMappin.addListener('dragend',(mapPinsMouseEvent)=>{

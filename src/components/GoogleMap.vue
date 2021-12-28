@@ -65,7 +65,7 @@
               >
             </b-col>
           </b-row>
-          <b-row>
+          <b-row >
             <b-col>
               <label for="">
                 目的地住所
@@ -77,6 +77,29 @@
             </b-col>
           </b-row>
         </div>
+      </b-col>
+    </b-row>
+    <hr>
+    <b-row class="mt-3">
+      <b-col>
+        <label for="">
+          距離
+        </label>
+        <input
+          v-model="distance"
+          type="text"
+          readonly
+        >
+      </b-col>
+      <b-col>
+        <label for="">
+          時間
+        </label>
+        <input
+          v-model="time"
+          type="text"
+          readonly
+        >
       </b-col>
     </b-row>
     <div 
@@ -99,7 +122,9 @@ export default {
       lng:139.69209551811218,
       destinationLat:'',
       destinationLng:'',
-      destinationAddress:''
+      destinationAddress:'',
+      distance:'',
+      time:''
     }
   }
 }

@@ -33,6 +33,7 @@ export const GoogleMapLoad = {
       });
       this.initMapPin(latLng)
       this.setMapMethod()
+      this.searchMainLatLng(this.mainMappin.position.lat(),this.mainMappin.position.lng())
       this.map.addListener('dblclick',(mapsMouseEvent)=>{
         return this.clickOnMap(mapsMouseEvent);
       });
@@ -59,8 +60,8 @@ export const GoogleMapLoad = {
       //リクエストの終着点の位置（Grand Central Station 到着地点の緯度経度）
       var end = new window.google.maps.LatLng(this.addMappin.position.lat(),this.addMappin.position.lng());  
       
-      console.log(start)
-      console.log(end)
+      // console.log(start)
+      // console.log(end)
       // ルートを取得するリクエスト
       var request = {
         origin: start,      // 出発地点の緯度経度
@@ -86,12 +87,13 @@ export const GoogleMapLoad = {
         destinations:[end],
         travelMode: 'WALKING',
       }
-      console.log("test")
       this.distanceMatrixService.getDistanceMatrix(re, (result, status)=> {
         // console.log(result)
         //ステータスがOKの場合、
         if (status === 'OK') {
-          console.log(result); 
+          this.distance = result.rows[0].elements[0].distance.value
+          this.time = result.rows[0].elements[0].duration.text
+          console.log(result.rows[0]); 
         }else{
           alert("取得できませんでした：" + status);
         }

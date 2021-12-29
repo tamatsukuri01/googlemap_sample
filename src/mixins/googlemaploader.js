@@ -2,10 +2,9 @@ export const GoogleMapLoad = {
   data() {
     return {
       map:'',
-      latLng: {lat: 35.6905696, lng: 139.690472},
       geocoder:'',
       mainMappin:'',
-      addMappin:[],
+      endMappin:'',
       position:'',
       directionsRenderer:'',
       directionsService:'',
@@ -17,7 +16,6 @@ export const GoogleMapLoad = {
       if(window.google) {
         clearInterval(timer);
         this.initMap()
-        // console.log(window.google)
       }
     },500)
     
@@ -28,72 +26,45 @@ export const GoogleMapLoad = {
       let latLng =new window.google.maps.LatLng(this.lat,this.lng)
       this.map = new window.google.maps.Map(this.$refs.map, {
         center: new window.google.maps.LatLng(latLng),
-        zoom: 17,
+        zoom: 18,
         disableDoubleClickZoom: true
       });
       this.initMapPin(latLng)
       this.setMapMethod()
       this.searchMainLatLng(this.mainMappin.position.lat(),this.mainMappin.position.lng())
-      this.map.addListener('dblclick',(mapsMouseEvent)=>{
-        return this.clickOnMap(mapsMouseEvent);
+      this.map.addListener('dblclick',(e)=>{
+        return this.clickOnMap(e);
       });
       this.mainMappin.addListener('dragend',(mapPinsMouseEvent)=>{
         return this.dragEndMainMapPin(mapPinsMouseEvent);
       });
-      
     },
 
+    //マップメソッド定義
     setMapMethod() {
-       //ジオコーディング用の変数定義
       this.geocoder = new window.google.maps.Geocoder();
-
       this.directionsService = new window.google.maps.DirectionsService();
-      //DirectionsRenderer のオブジェクトを生成
       this.directionsRenderer = new window.google.maps.DirectionsRenderer();
-      //directionsRenderer と地図を紐付け
       this.directionsRenderer.setMap(this.map); 
       this.distanceMatrixService = new window.google.maps.DistanceMatrixService();
     },
-
+    //2地点のルート取得
     getRoute() {
-      
-      var start = new window.google.maps.LatLng(this.mainMappin.position.lat(),this.mainMappin.position.lng());
-        
-      
-      var end = new window.google.maps.LatLng(this.addMappin.position.lat(),this.addMappin.position.lng());  
-      
+      let start = new window.google.maps.LatLng(this.lat,this.lng)
+      let end = new window.google.maps.LatLng(this.destinationLat,this.destinationLng)
       var request = {
         origin: start,   
         destination: end, 
         travelMode: 'WALKING'
       };
-      //DirectionsService のオブジェクトのメソッド route() にリクエストを渡し、
-      //コールバック関数で結果を setDirections(result) で directionsRenderer にセットして表示
       this.directionsService.route(request, (result, status)=> {
         if (status === 'OK') {
+          this.distance = result.routes[0].legs[0].distance.value + 'm'
+          this.time = result.routes[0].legs[0].duration.text
           this.directionsRenderer.setOptions({
             suppressMarkers:true
           })
           this.directionsRenderer.setDirections(result);
-        }else{
-          alert("取得できませんでした：" + status);
-        }
-      });
-      this.getDistance(start,end)
-    },
-    getDistance(start,end) {
-      let re = {
-        origins:[start] ,
-        destinations:[end],
-        travelMode: 'WALKING',
-      }
-      this.distanceMatrixService.getDistanceMatrix(re, (result, status)=> {
-        // console.log(result)
-        //ステータスがOKの場合、
-        if (status === 'OK') {
-          this.distance = result.rows[0].elements[0].distance.value
-          this.time = result.rows[0].elements[0].duration.text
-          console.log(result.rows[0]); 
         }else{
           alert("取得できませんでした：" + status);
         }
@@ -110,94 +81,116 @@ export const GoogleMapLoad = {
       })
     },
     //代表ピンドラッグエンド時
-    dragEndMainMapPin(mapPinEvent) {
-      console.log(mapPinEvent)
+    dragEndMainMapPin(e) {
+      // console.log(e)
+      this.lat = e.latLng.lat()
+      this.lng = e.latLng.lng()
+      if(typeof this.endMapPin != "undefined") {
+        this.getRoute()
+      }
+      this.searchMainLatLng(this.lat,this.lng)
       
-      this.lat = mapPinEvent.latLng.lat()
-      this.lng = mapPinEvent.latLng.lng()
-      this.searchMainLatLng(this.mainMappin.position.lat(),this.mainMappin.position.lng())
     },
     //マップピン生成
-    addMapPin(latLng) {
-      this.addMappin = new window.google.maps.Marker({
-        position:latLng,
+    addMapPin(e) {
+      this.endMapPin = new window.google.maps.Marker({
+        position:e.latLng,
         map:this.map,
         draggable: true,
         animation: window.google.maps.Animation.DROP,
         // icon: 'https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|6CB733'
       })
-      this.addMappin.addListener('dragend',(mapPinsMouseEvent)=>{
-        return this.dragEndaddMapPin(mapPinsMouseEvent);
+      this.endMapPin.addListener('dragend',(e)=>{
+        return this.dragEndaddMapPin(e);
       });
-      this.getRoute()
-      this.searchLatLng(this.addMappin.position.lat(),this.addMappin.position.lng())
+      this.searchLatLng(e.latLng.lat(),e.latLng.lng())
     },
-    dragEndaddMapPin(mapPinEvent) {
-      // console.log(mapPinEvent)
-      this.destinationLat = mapPinEvent.latLng.lat()
-      this.destinationLng = mapPinEvent.latLng.lng()
+    
+    dragEndaddMapPin(e) {
+      this.destinationLat = e.latLng.lat()
+      this.destinationLng = e.latLng.lng()
+      this.searchLatLng(this.destinationLat,this.destinationLng)
       this.getRoute()
-      this.searchLatLng(this.addMappin.position.lat(),this.addMappin.position.lng())
     },
     //マップクリック時発火
-    clickOnMap(mapEvent){
-      if(this.addMappin.length !== 0) {
-        this.addMappin.setMap(null)
+    clickOnMap(e){
+      this.destinationLat = e.latLng.lat()
+      this.destinationLng = e.latLng.lng()
+      if(typeof this.endMapPin != "undefined") {
+        this.endMapPin.setPosition(e.latLng)
+      } else {
+        this.addMapPin(e)
       }
-      // console.log(mapEvent)
-      this.destinationLat = mapEvent.latLng.lat()
-      this.destinationLng = mapEvent.latLng.lng()
-      this.addMapPin(mapEvent.latLng)
+      this.searchLatLng(this.destinationLat,this.destinationLng)
+      this.getRoute()
     },
     //住所から検索
     searchAddress() {
       this.geocoder.geocode({
-        'address': this.address
+        'address': this.address,
+        'language':'ja',
+        'region':'JP'
       }, (results, status) => {
         if (status === window.google.maps.GeocoderStatus.OK) {
           this.map.panTo(results[0].geometry.location);
-          this.mainMappin.setMap(null)
-          this.initMapPin(results[0].geometry.location)
-          
+          this.mainMappin.setPosition(results[0].geometry.location)
+          this.lat = results[0].geometry.location.lat();
+          this.lng = results[0].geometry.location.lng();
+          this.searchMainLatLng(this.lat,this.lng) 
+        } else {
+          alert("取得できませんでした：" + status);
+        }
+      })
+    },
+
+    //施設名から検索
+    searchPlace() {
+      this.geocoder.geocode({
+        'address': this.place,
+        'language':'ja',
+        'region':'JP'
+      }, (results, status) => {
+        if (status === window.google.maps.GeocoderStatus.OK) {
+          this.map.panTo(results[0].geometry.location);
+          this.mainMappin.setPosition(results[0].geometry.location)
+          this.address = results[0].formatted_address.replace('日本、', '');
           // console.log(results)
           this.lat = results[0].geometry.location.lat();
           this.lng = results[0].geometry.location.lng();
+        } else {
+          alert("取得できませんでした：" + status);
         }
       })
     },
     //代表情報緯度経度から住所
     searchMainLatLng(lat,lng) {
       this.geocoder.geocode({
-        'location': {lat:Number(lat),lng:Number(lng)}
+        'location': {lat:lat,lng:lng},
+        'language':'ja',
+        'region':'JP'
       }, (results, status) => {
         if (status === window.google.maps.GeocoderStatus.OK) {
           this.map.setCenter(results[0].geometry.location);
           // console.log(results)
-          this.address = results[0].formatted_address;
-          // this.mainMappin.setMap(results[0].geometry.location)
-          // this.destinationAddress = results[0].formatted_address;
+          this.address = results[0].formatted_address.replace('日本、', '');
+        } else {
+          alert("取得できませんでした：" + status);
         }
       })
     },
     //緯度経度から検索
     searchLatLng(lat,lng) {
-      // let lat = this.lat
-      // let lng = this.lng
       this.geocoder.geocode({
-        'location': {lat:Number(lat),lng:Number(lng)}
+        'location': {lat:lat,lng:lng},
+        'language':'ja',
+        'region':'JP'
       }, (results, status) => {
         if (status === window.google.maps.GeocoderStatus.OK) {
-          this.map.setCenter(results[0].geometry.location);
-          console.log(results)
-          // this.address = results[0].formatted_address;
-          // this.mainMappin.setMap(results[0].geometry.location)
-          this.destinationAddress = results[0].formatted_address;
-          // this.lat = results[0].geometry.location.lat();
-          // this.lng = results[0].geometry.location.lng();
-          // if(this.addMappin.length !== 0) {
-          //   this.addMappin.setMap(null)
-          // }
-          // this.addMapPin(results[0].geometry.location)
+          // this.map.setCenter(results[0].geometry.location);
+          // console.log(results)
+          this.destinationAddress = results[0].formatted_address.replace('日本、', '');
+        } else {
+          alert("取得できませんでした：" + status);
         }
       })
     }

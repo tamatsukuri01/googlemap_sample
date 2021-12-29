@@ -98,14 +98,14 @@ export const GoogleMapLoad = {
         map:this.map,
         draggable: true,
         animation: window.google.maps.Animation.DROP,
-        // icon: 'https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|6CB733'
+        icon: 'https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|6CB733'
       })
       this.endMapPin.addListener('dragend',(e)=>{
         return this.dragEndaddMapPin(e);
       });
       this.searchLatLng(e.latLng.lat(),e.latLng.lng())
     },
-    
+    //エンドピン移動後の処理
     dragEndaddMapPin(e) {
       this.destinationLat = e.latLng.lat()
       this.destinationLng = e.latLng.lng()
@@ -178,7 +178,7 @@ export const GoogleMapLoad = {
         }
       })
     },
-    //緯度経度から検索
+    //目的地緯度経度から住所検索
     searchLatLng(lat,lng) {
       this.geocoder.geocode({
         'location': {lat:lat,lng:lng},
@@ -186,7 +186,6 @@ export const GoogleMapLoad = {
         'region':'JP'
       }, (results, status) => {
         if (status === window.google.maps.GeocoderStatus.OK) {
-          // this.map.setCenter(results[0].geometry.location);
           // console.log(results)
           this.destinationAddress = results[0].formatted_address.replace('日本、', '');
         } else {

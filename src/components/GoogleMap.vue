@@ -29,11 +29,12 @@
                 v-model="lng"
               />
             </b-col>
-            <b-row class="mt-2">
+            <b-row class="mt-1">
               <b-col 
                 style="text-align:center;" 
               >
-                <b-button 
+                <b-button
+                  size="sm"
                   style="width:50%;"
                   variant="primary"
                   type="button" 
@@ -44,7 +45,7 @@
               </b-col>
             </b-row>
           </b-row>
-          <b-row class="mt-3">
+          <b-row class="mt-2">
             <b-col md="2">
               <label for="address">
                 住所:
@@ -57,11 +58,12 @@
                 v-model="address"
               />
             </b-col>
-            <b-row class="mt-2">
+            <b-row class="mt-1">
               <b-col 
                 style="text-align:center;"
               >
                 <b-button
+                  size="sm"
                   style="width:50%;"
                   variant="primary"
                   type="button" 
@@ -73,7 +75,7 @@
             </b-row>
             
           </b-row>
-          <b-row class="mt-3">
+          <b-row class="mt-2">
             <b-col md="2">
               <label for="place">
                 施設名:
@@ -86,11 +88,12 @@
                 v-model="place"
               />
             </b-col>
-            <b-row class="mt-2">
+            <b-row class="mt-1">
               <b-col 
                 style="text-align:center;"
               >
                 <b-button
+                  size="sm"
                   style="width:50%;"
                   variant="primary"
                   type="button" 
@@ -134,7 +137,7 @@
                 />
               </b-col>
             </b-row>
-            <b-row class="mt-3">
+            <b-row class="mt-2">
               <b-col md="2">
                 <label for="destinationAddress">
                   目的地住所:
@@ -150,7 +153,7 @@
               </b-col>
             </b-row>
 
-            <b-row class="mt-3">
+            <b-row class="mt-2">
               <b-col md="2">
                 <label for="distance">
                   距離
@@ -166,7 +169,7 @@
               </b-col>
             </b-row>
 
-            <b-row class="mt-3">
+            <b-row class="mt-2">
               <b-col md="2">
                 <label for="time">
                   時間:
@@ -187,7 +190,7 @@
       <hr>
       <div 
         ref="map" 
-        style="height:500px;width:100%;"
+        style="height:390px;width:100%;"
       ></div>
     </b-container>
   </div>

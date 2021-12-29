@@ -118,8 +118,8 @@ export default {
   data(){
     return {
       address:'',
-      lat:35.68963987311848,
-      lng:139.69209551811218,
+      lat:35.689634,
+      lng:139.692101,
       destinationLat:'',
       destinationLng:'',
       destinationAddress:'',

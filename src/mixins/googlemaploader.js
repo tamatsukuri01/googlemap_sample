@@ -29,12 +29,12 @@ export const GoogleMapLoad = {
       this.map = new window.google.maps.Map(this.$refs.map, {
         center: new window.google.maps.LatLng(latLng),
         zoom: 17,
-        
+        disableDoubleClickZoom: true
       });
       this.initMapPin(latLng)
       this.setMapMethod()
       this.searchMainLatLng(this.mainMappin.position.lat(),this.mainMappin.position.lng())
-      this.map.addListener('click',(mapsMouseEvent)=>{
+      this.map.addListener('dblclick',(mapsMouseEvent)=>{
         return this.clickOnMap(mapsMouseEvent);
       });
       this.mainMappin.addListener('dragend',(mapPinsMouseEvent)=>{
@@ -56,25 +56,25 @@ export const GoogleMapLoad = {
     },
 
     getRoute() {
-      var start = new window.google.maps.LatLng(this.mainMappin.position.lat(),this.mainMappin.position.lng());  
-      //リクエストの終着点の位置（Grand Central Station 到着地点の緯度経度）
+      
+      var start = new window.google.maps.LatLng(this.mainMappin.position.lat(),this.mainMappin.position.lng());
+        
+      
       var end = new window.google.maps.LatLng(this.addMappin.position.lat(),this.addMappin.position.lng());  
       
-      // console.log(start)
-      // console.log(end)
-      // ルートを取得するリクエスト
       var request = {
-        origin: start,      // 出発地点の緯度経度
-        destination: end,   // 到着地点の緯度経度
-        travelMode: 'WALKING' //トラベルモード（歩き）
+        origin: start,   
+        destination: end, 
+        travelMode: 'WALKING'
       };
       //DirectionsService のオブジェクトのメソッド route() にリクエストを渡し、
       //コールバック関数で結果を setDirections(result) で directionsRenderer にセットして表示
       this.directionsService.route(request, (result, status)=> {
-        // console.log(result)
-        //ステータスがOKの場合、
         if (status === 'OK') {
-          this.directionsRenderer.setDirections(result); //取得したルート（結果：result）をセット
+          this.directionsRenderer.setOptions({
+            suppressMarkers:true
+          })
+          this.directionsRenderer.setDirections(result);
         }else{
           alert("取得できませんでした：" + status);
         }
@@ -111,6 +111,8 @@ export const GoogleMapLoad = {
     },
     //代表ピンドラッグエンド時
     dragEndMainMapPin(mapPinEvent) {
+      console.log(mapPinEvent)
+      
       this.lat = mapPinEvent.latLng.lat()
       this.lng = mapPinEvent.latLng.lng()
       this.searchMainLatLng(this.mainMappin.position.lat(),this.mainMappin.position.lng())
@@ -170,7 +172,7 @@ export const GoogleMapLoad = {
       }, (results, status) => {
         if (status === window.google.maps.GeocoderStatus.OK) {
           this.map.setCenter(results[0].geometry.location);
-          console.log(results)
+          // console.log(results)
           this.address = results[0].formatted_address;
           // this.mainMappin.setMap(results[0].geometry.location)
           // this.destinationAddress = results[0].formatted_address;

@@ -165,12 +165,13 @@ export const GoogleMapLoad = {
     //代表情報緯度経度から住所
     searchMainLatLng(lat,lng) {
       this.geocoder.geocode({
-        'location': {lat:lat,lng:lng},
+        'location': {lat:Number(lat),lng:Number(lng)},
         'language':'ja',
         'region':'JP'
       }, (results, status) => {
         if (status === window.google.maps.GeocoderStatus.OK) {
           this.map.setCenter(results[0].geometry.location);
+          this.mainMappin.setPosition(results[0].geometry.location)
           // console.log(results)
           this.address = results[0].formatted_address.replace('日本、', '');
         } else {
